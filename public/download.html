@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Google Drive Direct Download</title>
+</head>
+<body>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const fileId = params.get('id');
+
+if (fileId) {
+  downloadFile(fileId);
+} else {
+  document.body.textContent = 'Invalid Google Drive file ID.';
+}
+
+async function downloadFile(fileId) {
+  try {
+    // Fetch file metadata using Google Drive API
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?key=AIzaSyC1AbMGQxr6Fgz27N6VL-jab9wXwyHEJ2g&fields=name,webContentLink`);
+    const data = await response.json();
+    const fileName = data.name;
+    const downloadLink = data.webContentLink;
+
+    // Create a hidden anchor element for download
+    const link = document.createElement('a');
+    link.href = downloadLink;
+    link.download = fileName;
+    document.body.appendChild(link);
+
+    // Trigger the download
+    link.click();
+
+    // Clean up (optional)
+    document.body.removeChild(link); 
+
+  } catch (error) {
+    console.error('Error fetching file metadata:', error);
+    document.body.textContent = 'Failed to download file.';
+  }
+}
+</script>
+
+</body>
+</html>
